@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response, render_template, send_from_directory
 from pymongo import MongoClient
 import smtplib
 from email.mime.text import MIMEText
@@ -12,10 +12,17 @@ from urllib.parse import quote_plus
 
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(__name__, 
+    static_folder='static',
+    template_folder='templates'
+)
 CORS(app, resources={
     r"/*": {
-        "origins": "*",
+        "origins": [
+            "http://localhost:5000",
+            "https://your-netlify-app.netlify.app",  # Netlify URL'nizi buraya ekleyin
+            "*"  # Geliştirme aşamasında tüm originlere izin ver
+        ],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"]
     }
@@ -169,8 +176,17 @@ def login():
         return json_response({'error': 'Geçersiz e-posta veya şifre'}, 401)
 
 @app.route('/', methods=['GET'])
-def test():
-    return json_response({'message': 'API is working!'})
+def index():
+    return render_template('index.html')
+
+@app.route('/game')
+def game():
+    return render_template('game.html')
+
+# Favicon için route
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(app.static_folder, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/health', methods=['GET'])
 def health():
