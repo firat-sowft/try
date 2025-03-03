@@ -1,6 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const API_URL = 'https://web-production-463f9.up.railway.app';
+    
+    // Bağlantı durumunu kontrol et
+    fetch(`${API_URL}/db-test`)
+        .then(response => response.json())
+        .then(data => {
+            console.log('Database Status:', data);
+            if (data.status === 'success') {
+                showNotification('Sunucu bağlantısı başarılı!');
+            }
+        })
+        .catch(error => {
+            console.error('Database Error:', error);
+            showNotification('Sunucu bağlantısında hata!', true);
+        });
+
     // API URL'sini güncelleyin
-    const API_URL = 'https://try-production.up.railway.app';
+    // const API_URL = 'https://try-production.up.railway.app';
     
     // API'nin çalışıp çalışmadığını kontrol et
     fetch(`${API_URL}/health`)
@@ -54,22 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({ email })
         });
         
-        if (response.ok) {
-            showNotification('Doğrulama kodu gönderildi!');
-            document.getElementById('verification-section-register').classList.remove('hidden');
-        } else {
-            const errorData = await response.json();
-            showNotification(`Doğrulama kodu gönderilemedi: ${errorData.error}`, true);
-        }
-    });
-
-    document.getElementById('send-code-forgot').addEventListener('click', async () => {
-        const email = document.getElementById('forgot-email').value;
-        console.log(`Sending verification code to ${email}`);
-        const response = await fetch(`${API_URL}/send-verification`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ email })
         });
