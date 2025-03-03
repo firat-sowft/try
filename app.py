@@ -170,6 +170,29 @@ def test():
 def health():
     return json_response({'status': 'healthy'})
 
+@app.route('/db-test', methods=['GET'])
+def test_db():
+    try:
+        # MongoDB bağlantısını test et
+        client.admin.command('ping')
+        
+        # Test koleksiyonuna veri ekleyip okuma yaparak tam test
+        test_result = play_collection.insert_one({'test': 'data'})
+        if test_result.inserted_id:
+            play_collection.delete_one({'_id': test_result.inserted_id})
+            
+        return json_response({
+            'status': 'success',
+            'message': 'MongoDB bağlantısı başarılı',
+            'database': os.getenv('MONGODB_DATABASE'),
+            'collection': play_collection.name
+        })
+    except Exception as e:
+        return json_response({
+            'status': 'error',
+            'message': f'MongoDB bağlantı hatası: {str(e)}'
+        }, 500)
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
