@@ -8,6 +8,7 @@ from flask_cors import CORS
 import re
 import os
 from dotenv import load_dotenv
+from urllib.parse import quote_plus
 
 load_dotenv()
 
@@ -15,21 +16,27 @@ app = Flask(__name__)
 CORS(app)
 
 # MongoDB bağlantısı
-mongodb_uri = os.getenv('MONGODB_URI')
-if not mongodb_uri:
-    raise ValueError("MONGODB_URI environment variable is not set")
-
 try:
+    # Bağlantı bilgilerini ayrı ayrı al ve encode et
+    username = quote_plus(os.getenv('MONGODB_USERNAME', 'mhmmdgymn'))
+    password = quote_plus(os.getenv('MONGODB_PASSWORD', 'Suskun1200#'))
+    cluster = os.getenv('MONGODB_CLUSTER', 'cluster0.uquyz.mongodb.net')
+    database = os.getenv('MONGODB_DATABASE', 'WordGame')
+    
+    # MongoDB URI'yi oluştur
+    mongodb_uri = f"mongodb+srv://{username}:{password}@{cluster}/{database}?retryWrites=true&w=majority"
+    
+    # Bağlantıyı test et
     client = MongoClient(mongodb_uri)
-    # Test the connection
     client.admin.command('ping')
-    print("MongoDB connection successful")
-except Exception as e:
-    print(f"MongoDB connection error: {e}")
-    raise
+    print("MongoDB bağlantısı başarılı")
+    
+    db = client[database]
+    play_collection = db.play
 
-db = client.WordGame
-play_collection = db.play
+except Exception as e:
+    print(f"MongoDB bağlantı hatası: {str(e)}")
+    raise
 
 # E-posta ayarları
 sender_email = os.getenv('SENDER_EMAIL')
@@ -154,6 +161,14 @@ def login():
         return json_response({'user': {'name': user['name'], 'surname': user['surname']}}, 200)
     else:
         return json_response({'error': 'Geçersiz e-posta veya şifre'}, 401)
+
+@app.route('/', methods=['GET'])
+def test():
+    return json_response({'message': 'API is working!'})
+
+@app.route('/health', methods=['GET'])
+def health():
+    return json_response({'status': 'healthy'})
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))

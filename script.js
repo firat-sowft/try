@@ -1,6 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // API URL'sini .env dosyasından al veya sabit URL'yi kullan
-    const API_URL = 'https://web-production-463f9.up.railway.app';
+    // API URL'sini güncelleyin
+    const API_URL = 'https://try-production.up.railway.app';
+    
+    // API'nin çalışıp çalışmadığını kontrol et
+    fetch(`${API_URL}/health`)
+        .then(response => response.json())
+        .then(data => console.log('API Status:', data))
+        .catch(error => console.error('API Error:', error));
 
     // Splash screen'i 3 saniye sonra gizle
     setTimeout(() => {
