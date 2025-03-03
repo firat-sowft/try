@@ -4,10 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelime Oyunu</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+    <div id="notification" class="hidden"></div>
+    <div id="splash-screen">
+        <img src="{{ url_for('static', filename='img/cover.jpg') }}" alt="Kelime Oyunu Kapak">
+    </div>
+
     <!-- ...existing content... -->
+
 </body>
-<script src="{{ url_for('static', filename='script.js') }}"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </html>
