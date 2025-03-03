@@ -70,6 +70,22 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({ email })
         });
         
+        if (response.ok) {
+            showNotification('Doğrulama kodu gönderildi!');
+            document.getElementById('verification-section-register').classList.remove('hidden');
+        } else {
+            const errorData = await response.json();
+            showNotification(`Doğrulama kodu gönderilemedi: ${errorData.error}`, true);
+        }
+    });
+
+    document.getElementById('send-code-forgot').addEventListener('click', async () => {
+        const email = document.getElementById('forgot-email').value;
+        console.log(`Sending verification code to ${email}`);
+        const response = await fetch(`${API_URL}/send-verification`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ email })
         });
