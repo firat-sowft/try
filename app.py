@@ -15,7 +15,19 @@ app = Flask(__name__)
 CORS(app)
 
 # MongoDB bağlantısı
-client = MongoClient(os.getenv('MONGODB_URI'))
+mongodb_uri = os.getenv('MONGODB_URI')
+if not mongodb_uri:
+    raise ValueError("MONGODB_URI environment variable is not set")
+
+try:
+    client = MongoClient(mongodb_uri)
+    # Test the connection
+    client.admin.command('ping')
+    print("MongoDB connection successful")
+except Exception as e:
+    print(f"MongoDB connection error: {e}")
+    raise
+
 db = client.WordGame
 play_collection = db.play
 
